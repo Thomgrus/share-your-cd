@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: back
+  name: back
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: back
+  template:
+    metadata:
+      labels:
+        k8s-app: back
+    spec:
+      containers:
+      - image: demo-java
+        imagePullPolicy: IfNotPresent
+        name: back
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: back
+  namespace: demo
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: http-port
+  selector:
+    k8s-app: back

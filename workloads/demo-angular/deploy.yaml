@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: front
+  name: front
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: front
+  template:
+    metadata:
+      labels:
+        k8s-app: front
+    spec:
+      containers:
+      - image: demo-angular
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: API_URL
+          value: "back.demo.svc.cluster.local:8080"
+        name: front
+        ports:
+        - containerPort: 80
+          protocol: TCP
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+  namespace: demo
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: http-port
+  selector:
+    k8s-app: front
